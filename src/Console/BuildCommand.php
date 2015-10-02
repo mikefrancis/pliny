@@ -10,8 +10,18 @@ use Michelf\Markdown;
 
 class BuildCommand extends Command
 {
+    /**
+     * Compiled site directory.
+     *
+     * @var string
+     */
     private $siteDir = '_site';
 
+    /**
+     * Instance of Filesystem.
+     *
+     * @var Filesystem
+     */
     private $filesystem;
 
     /**
@@ -57,6 +67,21 @@ class BuildCommand extends Command
     }
 
     /**
+     * Build a HTML file from a markdown file.
+     *
+     * @param string $filename
+     * @return void
+     */
+    private function buildFile($filename)
+    {
+        $pathParts   = pathinfo($filename);
+        $rawMarkdown = file_get_contents($filename);
+        $newFilename = $this->siteDir . '/' . str_replace('_', '', $pathPaths['dirname']) . '/' . $filename . '.html';
+
+        $this->filesystem->dumpFile($newFilename, $this->markdownToHtml($rawMarkdown));
+    }
+
+    /**
      * Parse markdown and return as HTML.
      *
      * @param string $rawMarkdown
@@ -65,21 +90,5 @@ class BuildCommand extends Command
     private function markdownToHtml($rawMarkdown)
     {
         return Markdown::defaultTransform($rawMarkdown);
-    }
-
-    /**
-     * Build a HTML file from a markdown file.
-     *
-     * @param string $filename
-     * @return void
-     */
-    private function buildFile($filename)
-    {
-        $pathParts = pathinfo($filename);
-        $rawMarkdown = file_get_contents($filename);
-
-        $newFilename = $this->siteDir . '/' . str_replace('_', '', $pathPaths['dirname']) . '/' . $filename . '.html';
-
-        $this->filesystem->dumpFile($newFilename, $this->markdownToHtml($rawMarkdown));
     }
 }
