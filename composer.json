@@ -1,13 +1,21 @@
 {
-  "autoload": {
-    "psr-4": {
-      "Pliny\\": "src/"
+    "name": "mikefrancis/pliny",
+    "description": "Another static site generator.",
+    "authors": [
+        {
+            "name": "Mike Francis",
+            "email": "mikeffrancis@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Pliny\\": "src/"
+        }
+    },
+    "require": {
+        "symfony/filesystem": "^2.7",
+        "symfony/console": "^2.7",
+        "mnapoli/front-yaml": "^1.5",
+        "twig/twig": "^1.22"
     }
-  },
-  "require": {
-    "symfony/filesystem": "^2.7",
-    "symfony/console": "^2.7",
-    "mnapoli/front-yaml": "^1.5",
-    "twig/twig": "^1.22"
-  }
 }
