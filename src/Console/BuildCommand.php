@@ -31,7 +31,8 @@ class BuildCommand extends Command
     {
         $output->writeln('Starting build...');
 
-        new Application();
+        $pliny = new Application();
+        $pliny->build();
 
         $output->writeln('Build complete!');
     }

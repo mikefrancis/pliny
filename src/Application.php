@@ -62,8 +62,6 @@ class Application
         $this->twig       = new Twig_Environment($loader, $this->layoutConfig);
         $this->filesystem = new Filesystem();
         $this->parser     = new Parser();
-
-        $this->start();
     }
 
     /**
@@ -71,7 +69,7 @@ class Application
      *
      * @return void
      */
-    public function start()
+    public function buildx()
     {
         $this->cleanUp();
 
@@ -148,7 +146,7 @@ class Application
     {
         $pathParts = pathinfo($filename);
         $filename  = $this->siteDir . '/' .
-            str_replace('_', '', $pathPaths['dirname']) .
+            str_replace('_', '', $pathParts['dirname']) .
             '/' . $pathParts['filename'] . '.html';
 
         return $filename;
