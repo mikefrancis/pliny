@@ -47,10 +47,19 @@ class Application
     ];
 
     /**
+     * Instance of Twig.
+     *
+     * @var Twig_Environment
+     */
+    private $twig;
+
+    /**
      * Constructor.
      */
     public function __construct()
     {
+        $loader           = new Twig_Loader_Filesystem($this->templateDir);
+        $this->twig       = new Twig_Environment($loader, $this->layoutConfig);
         $this->filesystem = new Filesystem();
         $this->parser     = new Parser();
 
@@ -124,10 +133,7 @@ class Application
      */
     private function renderLayout($data)
     {
-        $loader = new Twig_Loader_Filesystem($this->templateDir);
-        $twig   = new Twig_Environment($loader, $this->layoutConfig);
-
-        return $twig->render('default.html', $data);
+        return $this->twig->render('default.html', $data);
     }
 
     /**
