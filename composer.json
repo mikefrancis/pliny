@@ -7,6 +7,7 @@
   "require": {
     "symfony/filesystem": "^2.7",
     "symfony/console": "^2.7",
-    "michelf/php-markdown": "^1.5"
+    "mnapoli/front-yaml": "^1.5",
+    "twig/twig": "^1.22"
   }
 }
