@@ -133,7 +133,9 @@ class Application
      */
     private function renderLayout($data)
     {
-        return $this->twig->render('default.html', $data);
+        $layout = $data['layout'] ? $data['layout'] : 'default.html';
+
+        return $this->twig->render($layout, $data);
     }
 
     /**
