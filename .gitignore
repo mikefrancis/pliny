@@ -1,4 +1,5 @@
 /vendor
 /.idea
+public
 .DS_Store
 composer.lock

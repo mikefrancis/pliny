@@ -10,20 +10,6 @@ use Twig_Loader_Filesystem;
 class Application
 {
     /**
-     * Compiled site directory.
-     *
-     * @var string
-     */
-    private $siteDir = 'public';
-
-    /**
-     * Template directories.
-     *
-     * @var string
-     */
-    private $templateDir = '_layouts';
-
-    /**
      * Instance of Filesystem.
      *
      * @var Filesystem
@@ -38,15 +24,6 @@ class Application
     private $parser;
 
     /**
-     * Config for templating engine.
-     *
-     * @var array
-     */
-    private $layoutConfig = [
-        'autoescape' => false
-    ];
-
-    /**
      * Instance of Twig.
      *
      * @var Twig_Environment
@@ -54,14 +31,49 @@ class Application
     private $twig;
 
     /**
-     * Constructor.
+     * Root directory.
+     *
+     * @var string
      */
-    public function __construct()
+    private $root = '.';
+
+    /**
+     * Compiled site directory.
+     *
+     * @var string
+     */
+    private $siteDir = 'public';
+
+    /**
+     * Template directories.
+     *
+     * @var string
+     */
+    private $layoutsDir = '_layouts';
+
+    /**
+     * Collections of items used.
+     *
+     * @var array
+     */
+    private $collections = [];
+
+    /**
+     * Constructor.
+     *
+     * @param array $config
+     */
+    public function __construct($config)
     {
-        $loader           = new Twig_Loader_Filesystem($this->templateDir);
-        $this->twig       = new Twig_Environment($loader, $this->layoutConfig);
-        $this->filesystem = new Filesystem();
-        $this->parser     = new Parser();
+        $this->root        = $config['root'] ? $config['root'] : $this->root;
+        $this->siteDir     = $config['site'] ? $config['site'] : $this->siteDir;
+        $this->layoutsDir  = $config['layouts'] ? $config['layouts'] : $this->layoutsDir;
+        $this->collections = $config['collections'] ? $config['collections'] : $this->collections;
+
+        $loader            = new Twig_Loader_Filesystem($this->root . '/' . $this->layoutsDir);
+        $this->twig        = new Twig_Environment($loader, ['autoescape' => false]);
+        $this->filesystem  = new Filesystem();
+        $this->parser      = new Parser();
     }
 
     /**
@@ -69,14 +81,16 @@ class Application
      *
      * @return void
      */
-    public function buildx()
+    public function build()
     {
         $this->cleanUp();
 
-        $filenames = glob('**/*.md');
+        foreach ($this->collections as $collection => $data) {
+            if (is_string($data)) {
+                $collection = $data;
+            }
 
-        foreach ($filenames as $filename) {
-            $this->buildHtml($filename);
+            $this->buildCollection($collection);
         }
     }
 
@@ -87,21 +101,41 @@ class Application
      */
     private function cleanUp()
     {
-        $this->filesystem->remove($this->siteDir);
+        $this->filesystem->remove($this->root . '/' . $this->siteDir);
 
-        $this->filesystem->mkdir($this->siteDir);
+        $this->filesystem->mkdir($this->root . '/' . $this->siteDir);
+    }
+
+    /**
+     * Build all item collections.
+     *
+     * @param string $collection
+     * @return void
+     */
+    private function buildCollection($collection)
+    {
+        $files = glob($this->root . '/_' . $collection . '/*.md');
+
+        foreach ($files as $file) {
+            $this->buildHtml($collection, $file);
+        }
     }
 
     /**
      * Tranform markdown files into HTML.
      *
-     * @param string $filename
+     * @param string $collection
+     * @param string $file
      * @return void
      */
-    private function buildHtml($filename)
+    private function buildHtml($collection, $file)
     {
-        $newFilename = $this->createNewFilename($filename);
-        $data        = $this->parseFile(file_get_contents($filename));
+        $data        = $this->parseFile(file_get_contents($file));
+        $pathParts   = pathinfo($file);
+        $newFilename = $this->root .
+            '/' . $this->siteDir .
+            '/' . $collection .
+            '/' . $pathParts['filename'] . '.html';
 
         $this->filesystem->dumpFile($newFilename, $this->renderLayout($data));
     }
@@ -134,21 +168,5 @@ class Application
         $layout = $data['layout'] ? $data['layout'] : 'default.html';
 
         return $this->twig->render($layout, $data);
-    }
-
-    /**
-     * Create a new filename.
-     *
-     * @param $filename string
-     * @return string
-     */
-    private function createNewFilename($filename)
-    {
-        $pathParts = pathinfo($filename);
-        $filename  = $this->siteDir . '/' .
-            str_replace('_', '', $pathParts['dirname']) .
-            '/' . $pathParts['filename'] . '.html';
-
-        return $filename;
     }
 }
