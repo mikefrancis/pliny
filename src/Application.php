@@ -150,9 +150,7 @@ class Application
     {
         $document = $this->parser->parse($raw);
 
-        $data = $document->getYAML() + [
-            'content' => $document->getContent()
-        ];
+        $data = array_merge($document->getYAML(), ['content' => $document->getContent()]);
 
         return $data;
     }
