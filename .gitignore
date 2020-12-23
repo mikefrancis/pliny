@@ -1,5 +1,3 @@
 /vendor
-/.idea
-public
-.DS_Store
+/example
 composer.lock

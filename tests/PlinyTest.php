@@ -1,38 +1,34 @@
 <?php
 
+use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
 use Pliny\Application;
+use Pliny\Pliny;
 
-class PlinyTest extends PHPUnit_Framework_TestCase
+class PlinyTest extends TestCase
 {
-    /**
-     * Instance of Pliny Application.
-     *
-     * @var Application
-     */
-    private $pliny;
-
-    /**
-     * Instantiate a new Pliny Application.
-     *
-     * @return void
-     */
-    public function setUp()
-    {
-        $this->pliny = new Application([
-            'root'        => __DIR__,
-            'layouts'     => '_layouts',
-            'collections' => [
-                'posts'
-            ]
-        ]);
-    }
-
     /**
      * Check Pliny can be instantiated.
      */
-    public function testPlinyCanBeInstantiated()
+    public function testPlinyCanBeBuild()
     {
-        $this->assertInstanceOf(Application::class, $this->pliny);
+        $structure = [
+            'examples' => [
+                'test.php'    => 'some text content',
+                'other.php'   => 'Some more text content',
+                'Invalid.csv' => 'Something else',
+            ],
+            'an_empty_folder' => [],
+            'badlocation.php' => 'some bad content',
+            '[Foo]'           => 'a block device',
+        ];
+        $root = vfsStream::setup('root', null, $structure);
+
+        $app = new Pliny([
+            'rootDir' => 'somewhere',
+            'siteDir' => 'www',
+            'collections' => 'elephants',
+        ]);
     }
 
     /**

@@ -4,9 +4,11 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Pliny\Console\BuildCommand;
+use Pliny\Console\CleanCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application('Pliny', '0.1-dev');
 
 $application->add(new BuildCommand());
+$application->add(new CleanCommand());
 $application->run();
